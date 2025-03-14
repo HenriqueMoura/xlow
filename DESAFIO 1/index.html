@@ -4,18 +4,35 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Desafio 1 - XLOW</title>
+    <link rel="stylesheet" href="style.css?v=0.01" />
   </head>
   <header>
     <h1>XLOW - PRODUTOS</h1>
   </header>
 
   <section id="main" class="main">
-    <section id="vitrine" class="vitrine">
+    <div class="filter">
+      <div class="filter__quantity">
+        <label for="quantity-selector">Exibindo</label>
+        <select id="quantity-selector" class="filter__quantity-selector">
+          <option value="5">5 itens</option>
+          <option value="10">10 itens</option>
+          <option value="20">20 itens</option>
+        </select>
+      </div>
 
-    </section>
-    <section id="produtos" class="produtos"> 
-
-    </section>
+      <b class="filter__quantity-itens"></b>
+    
+      <div class="filter__columns-control">
+        <i title="1 coluna"></i>
+        <i title="2 colunas"></i>
+        <i title="3 colunas"></i>
+        <i title="4 colunas"></i>
+        <i title="5 colunas"></i>
+      </div>
+    </div>
+    <section id="vitrine" class="vitrine"></section>
+    <section id="produtos" class="produtos"> </section>
   </section>
 
 
