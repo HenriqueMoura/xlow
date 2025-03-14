@@ -121,6 +121,14 @@ function updateIcons(toggle, grid) {
   });
 }
 
+function getPrice(item, type = "Price") {
+  const price = item.sellers?.[0]?.commertialOffer?.[type] || "Indisponível";
+
+  return price !== "Indisponível"
+    ? `R$ ${parseFloat(price).toFixed(2).replace(".", ",")}`
+    : price;
+}
+
 function createProductCard(product) {
   if (product.leangth === 0) {
     return `<div class="card">
@@ -128,14 +136,6 @@ function createProductCard(product) {
         <h1>Produto não encontrado</h1>
       </div>
     `;
-  }
-
-  function getPrice(item, type = "Price") {
-    const price = item.sellers?.[0]?.commertialOffer?.[type] || "Indisponível";
-
-    return price !== "Indisponível"
-      ? `R$ ${parseFloat(price).toFixed(2).replace(".", ",")}`
-      : price;
   }
 
   const card = document.createElement("div");
@@ -146,6 +146,7 @@ function createProductCard(product) {
 
   const price = getPrice(firstItem, "Price");
   const priceWithoutDiscount = getPrice(firstItem, "PriceWithoutDiscount");
+
   card.innerHTML = `
     
     <div class="vitrine__card__image">
@@ -156,17 +157,12 @@ function createProductCard(product) {
 
       ${renderOptions(product)}
     </div>
-      <div class="vitrine__card__info">
-   ${
-     priceWithoutDiscount === price
-       ? `<p class="vitrine__cards__info-price vitrine__cards__info-price--original">${priceWithoutDiscount}</p>
-     <p class="vitrine__cards__info-price vitrine__cards__info-price--discounted">${price}</p>`
-       : `<p class="vitrine__cards__info-price vitrine__cards__info-price--discounted">${price}</p>`
-   }
-
+    <div class="vitrine__card__info">
+      <div class="vitrine__cards__info-price">
+        ${renderPrice(price, priceWithoutDiscount)}
+      </div>
       <button class="vitrine__cards__info-button">Comprar</button>
-
-  </div>`;
+    </div>`;
   return card;
 }
 
@@ -178,21 +174,37 @@ function setOptionsProducts() {
         .getAttribute("data-product-id");
 
       const productDetails = await fetchProductDetail(productId);
+      const firstItem = productDetails[0].items[0];
+      const newImages = firstItem.images;
 
-      if (
-        productDetails &&
-        productDetails.items &&
-        productDetails.items.length > 0
-      ) {
-        const firstItem = productDetails.items[0];
-        const newImages = firstItem.images;
-        const imageContainer = option
-          .closest(".vitrine__card")
-          .querySelector(".vitrine__card__image");
-        imageContainer.innerHTML = renderImage(newImages, 300, 300);
-      }
+      const imageContainer = option
+        .closest(".vitrine__card")
+        .querySelector(".vitrine__card__image");
+      imageContainer.innerHTML = renderImage(newImages, 300, 300);
+
+      const price = getPrice(firstItem, "Price");
+      const priceWithoutDiscount = getPrice(firstItem, "PriceWithoutDiscount");
+
+      const priceElemenet = option
+        .closest(".vitrine__card")
+        .querySelector(".vitrine__cards__info-price");
+
+      priceElemenet.innerHTML = renderPrice(price, priceWithoutDiscount);
     });
   });
+}
+
+function renderPrice(price, priceWithoutDiscount) {
+  if (priceWithoutDiscount === price) {
+    return `
+      <p class="vitrine__cards__info-price vitrine__cards__info-price--original">${priceWithoutDiscount}</p>
+      <p class="vitrine__cards__info-price vitrine__cards__info-price--discounted">${price}</p>
+    `;
+  } else {
+    return `
+      <p class="vitrine__cards__info-price vitrine__cards__info-price--discounted">${price}</p>
+    `;
+  }
 }
 
 function renderProducts(products, quantity) {
